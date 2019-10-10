@@ -47,7 +47,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
     }
 
     /**
-     * @param $value
+     * @param object $value
      *
      * @throws \ReflectionException
      * @throws \Exception
@@ -116,7 +116,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
     }
 
     /**
-     * @param $value
+     * @param array|\Traversable $value
      *
      * @throws \Exception
      *

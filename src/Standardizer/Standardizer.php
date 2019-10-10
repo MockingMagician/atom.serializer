@@ -14,7 +14,7 @@ class Standardizer implements ValueStandardizerInterface
 {
     private $config;
 
-    public function __construct(StandardizerConfig $config)
+    public function __construct(StandardizerConfig $config = null)
     {
         if (null === $config) {
             $config = new StandardizerConfig();
@@ -31,9 +31,10 @@ class Standardizer implements ValueStandardizerInterface
      * - string
      * - array.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @throws \Exception
+     * @throws \Throwable
      *
      * @return array|bool|float|int|string
      */

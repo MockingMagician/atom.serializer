@@ -23,7 +23,7 @@ class ValueStandardizer implements ValueStandardizerInterface
     }
 
     /**
-     * Standardize the input value and can return scalars type list:
+     * Standardize the input value and can return value in scalars type list:
      * - bool
      * - integer
      * - float
@@ -31,12 +31,13 @@ class ValueStandardizer implements ValueStandardizerInterface
      * - array
      * - null.
      *
-     * @param $value
+     * @param mixed $value
      *
      * @throws StandardizeValueImplementationException
      * @throws \Exception
+     * @throws \Throwable
      *
-     * @return array|bool|float|int|string
+     * @return array|bool|float|int|string|null
      */
     public function standardize($value)
     {
@@ -50,7 +51,7 @@ class ValueStandardizer implements ValueStandardizerInterface
             || \is_int($value)
             || \is_float($value)
             || \is_string($value)
-            || null === $value
+            || \is_null($value)
         ) {
             return $value;
         }

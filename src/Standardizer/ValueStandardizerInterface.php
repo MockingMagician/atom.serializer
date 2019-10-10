@@ -11,16 +11,17 @@ namespace MockingMagician\Atom\Serializer\Standardizer;
 interface ValueStandardizerInterface
 {
     /**
-     * Standardize the input value and can return scalars type list:
+     * Standardize the input value and can return value in scalars type list:
      * - bool
      * - integer
      * - float
      * - string
-     * - array.
+     * - array
+     * - null.
      *
-     * @param $value
+     * @param mixed $value
      *
-     * @return array|bool|float|int|string
+     * @return array|bool|float|int|string|null
      */
     public function standardize($value);
 }

@@ -30,7 +30,7 @@ class CircularReferenceResolver
     }
 
     /**
-     * @param $value
+     * @param object $value
      *
      * @throws \Exception
      *
