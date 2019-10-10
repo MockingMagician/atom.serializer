@@ -1,9 +1,13 @@
 <?php
 
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
+
 namespace MockingMagician\Atom\Serializer\Standardizer;
 
-
-use MockingMagician\Atom\Serializer\Exception\StandardizeValueImplementationException;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
 class ObjectStandardizer implements ObjectStandardizerInterface
@@ -18,21 +22,24 @@ class ObjectStandardizer implements ObjectStandardizerInterface
     }
 
     /**
-     * Standardize the input object and return an array
+     * Standardize the input object and return an array.
      *
      * @param array|object|\Traversable $value
-     * @return array
+     *
      * @throws \Exception
+     * @throws \Throwable
+     *
+     * @return array
      */
     public function standardize($value): array
     {
         $this->register->register($value);
 
-        if (is_object($value)) {
+        if (\is_object($value)) {
             return $this->standardizeObject($value);
         }
 
-        if (is_iterable($value)) {
+        if (\is_iterable($value)) {
             return $this->standardizeIterable($value);
         }
 
@@ -41,10 +48,12 @@ class ObjectStandardizer implements ObjectStandardizerInterface
 
     /**
      * @param $value
-     * @return array
+     *
      * @throws \ReflectionException
      * @throws \Exception
      * @throws \Throwable
+     *
+     * @return array
      */
     private function standardizeObject($value): array
     {
@@ -76,10 +85,11 @@ class ObjectStandardizer implements ObjectStandardizerInterface
             }
 
             $vs = new ValueStandardizer($this->register, $this->config);
+
             try {
                 $val = $vs->standardize($property->getValue($value));
             } catch (\Throwable $e) {
-                if (in_array(get_class($e), $this->config->getContinueOnException(), true)) {
+                if (\in_array(\get_class($e), $this->config->getContinueOnException(), true)) {
                     continue;
                 }
 
@@ -107,8 +117,10 @@ class ObjectStandardizer implements ObjectStandardizerInterface
 
     /**
      * @param $value
-     * @return array
+     *
      * @throws \Exception
+     *
+     * @return array
      */
     private function standardizeIterable($value): array
     {

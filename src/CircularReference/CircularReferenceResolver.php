@@ -1,7 +1,12 @@
 <?php
 
-namespace MockingMagician\Atom\Serializer\CircularReference;
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
+namespace MockingMagician\Atom\Serializer\CircularReference;
 
 class CircularReferenceResolver
 {
@@ -17,17 +22,19 @@ class CircularReferenceResolver
 
     public function haveResolver($object): bool
     {
-        if (!is_object($object)) {
+        if (!\is_object($object)) {
             return false;
         }
 
-        return isset($this->resolvers[get_class($object)]);
+        return isset($this->resolvers[\get_class($object)]);
     }
 
     /**
      * @param $value
-     * @return mixed
+     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     public function resolve($value)
     {
@@ -35,6 +42,6 @@ class CircularReferenceResolver
             throw new \Exception();
         }
 
-        return ($this->resolvers[get_class($value)])($value);
+        return ($this->resolvers[\get_class($value)])($value);
     }
 }

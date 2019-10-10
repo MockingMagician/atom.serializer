@@ -1,7 +1,12 @@
 <?php
 
-namespace MockingMagician\Atom\Serializer\Standardizer;
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
+namespace MockingMagician\Atom\Serializer\Standardizer;
 
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
@@ -11,7 +16,7 @@ class Standardizer implements ValueStandardizerInterface
 
     public function __construct(StandardizerConfig $config)
     {
-        if (is_null($config)) {
+        if (null === $config) {
             $config = new StandardizerConfig();
         }
 
@@ -24,11 +29,13 @@ class Standardizer implements ValueStandardizerInterface
      * - integer
      * - float
      * - string
-     * - array
+     * - array.
      *
      * @param $value
-     * @return bool|int|float|string|array
+     *
      * @throws \Exception
+     *
+     * @return array|bool|float|int|string
      */
     public function standardize($value)
     {

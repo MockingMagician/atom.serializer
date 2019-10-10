@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
+
 namespace MockingMagician\Atom\Serializer\Tests;
 
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
@@ -7,13 +13,15 @@ use MockingMagician\Atom\Serializer\Standardizer\ObjectStandardizer;
 use MockingMagician\Atom\Serializer\Standardizer\StandardizerConfig;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 class ObjectStandardizerTest extends TestCase
 {
-
     /**
      * @throws \Exception
      */
-    public function test standardize simple array()
+    public function test standardize simple array(): void
     {
         $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
 
@@ -23,13 +31,13 @@ class ObjectStandardizerTest extends TestCase
             0.2,
         ];
 
-        $this->assertEquals($array, $os->standardize($array));
+        static::assertEquals($array, $os->standardize($array));
     }
 
     /**
      * @throws \Exception
      */
-    public function test standardize keys values array()
+    public function test standardize keys values array(): void
     {
         $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
 
@@ -41,17 +49,17 @@ class ObjectStandardizerTest extends TestCase
             20 => 3.45,
         ];
 
-        $this->assertEquals($array, $os->standardize($array));
+        static::assertEquals($array, $os->standardize($array));
     }
 
     /**
      * @throws \Exception
      */
-    public function test standardize simple object()
+    public function test standardize simple object(): void
     {
         $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
 
-        $object = new class {
+        $object = new class() {
             public $public;
             protected $protected;
             private $private;
@@ -64,7 +72,7 @@ class ObjectStandardizerTest extends TestCase
             }
         };
 
-        $this->assertEquals(
+        static::assertEquals(
             [
                 'public' => 'public',
                 'protected' => 'protected',
@@ -77,11 +85,11 @@ class ObjectStandardizerTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function test standardize object infinite circular reference()
+    public function test standardize object infinite circular reference(): void
     {
         $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
 
-        $object = new class {
+        $object = new class() {
             public $banalReference;
             public $selfReference;
 
@@ -92,7 +100,7 @@ class ObjectStandardizerTest extends TestCase
             }
         };
 
-        $this->assertEquals(
+        static::assertEquals(
             [
                 'banalReference' => 'banal_reference',
             ],
@@ -103,14 +111,14 @@ class ObjectStandardizerTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function test standardize object infinite circular reference accept most than one()
+    public function test standardize object infinite circular reference accept most than one(): void
     {
         $sc = new StandardizerConfig();
         $sc->setMaxCircularReference(3);
 
         $os = new ObjectStandardizer(new ObjectRegister(), $sc);
 
-        $object = new class {
+        $object = new class() {
             public $banalReference;
             public $selfReference;
 
@@ -121,7 +129,7 @@ class ObjectStandardizerTest extends TestCase
             }
         };
 
-        $this->assertEquals(
+        static::assertEquals(
             [
                 'banalReference' => 'banal_reference',
                 'selfReference' => [
@@ -138,9 +146,9 @@ class ObjectStandardizerTest extends TestCase
     /**
      * @throws \Exception
      */
-    public function test standardize object infinite circular reference with resolver()
+    public function test standardize object infinite circular reference with resolver(): void
     {
-        $object = new class {
+        $object = new class() {
             public $banalReference;
             public $selfReference;
 
@@ -152,14 +160,14 @@ class ObjectStandardizerTest extends TestCase
         };
 
         $sc = new StandardizerConfig();
-        $sc->addCircularReferenceResolver(get_class($object), function ($object) { return get_class($object); });
+        $sc->addCircularReferenceResolver(\get_class($object), function ($object) { return \get_class($object); });
 
         $os = new ObjectStandardizer(new ObjectRegister(), $sc);
 
-        $this->assertEquals(
+        static::assertEquals(
             [
                 'banalReference' => 'banal_reference',
-                'selfReference' => get_class($object),
+                'selfReference' => \get_class($object),
             ],
             $os->standardize($object)
         );

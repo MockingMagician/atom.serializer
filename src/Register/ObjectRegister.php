@@ -1,7 +1,12 @@
 <?php
 
-namespace MockingMagician\Atom\Serializer\Register;
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
+namespace MockingMagician\Atom\Serializer\Register;
 
 class ObjectRegister
 {
@@ -10,7 +15,7 @@ class ObjectRegister
 
     public function register($value): bool
     {
-        if (!is_object($value)) {
+        if (!\is_object($value)) {
             return false;
         }
 
@@ -28,20 +33,20 @@ class ObjectRegister
 
     public function isRegistered($value): bool
     {
-        if (!is_object($value)) {
+        if (!\is_object($value)) {
             return false;
         }
 
-        return in_array($value, $this->references, true);
+        return \in_array($value, $this->references, true);
     }
 
     public function getRegisteredTimes($value): int
     {
-        if (!is_object($value)) {
+        if (!\is_object($value)) {
             return 0;
         }
 
-        $key = array_search($value, $this->references, true);
+        $key = \array_search($value, $this->references, true);
 
         if (false === $key) {
             return 0;
@@ -52,11 +57,11 @@ class ObjectRegister
 
     private function incrementCounter($value): self
     {
-        if (!is_object($value)) {
+        if (!\is_object($value)) {
             return $this;
         }
 
-        $key = array_search($value, $this->references, true);
+        $key = \array_search($value, $this->references, true);
 
         if (false === $key) {
             return $this;
@@ -68,7 +73,7 @@ class ObjectRegister
             return $this;
         }
 
-        $this->referencesCounter[$key]++;
+        ++$this->referencesCounter[$key];
 
         return $this;
     }
