@@ -90,7 +90,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
             $depthClone = clone $this->depthWatcher;
             $depthClone->goDeeper();
 
-            if ($depthClone->getDepth() > $this->config->getMaxDepth()) {
+            if ($depthClone->getDepth() >= $this->config->getMaxDepth()) {
                 continue;
             }
 
@@ -141,7 +141,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
             $depthClone = clone $this->depthWatcher;
             $depthClone->goDeeper();
 
-            if ($depthClone->getDepth() > $this->config->getMaxDepth()) {
+            if ($depthClone->getDepth() >= $this->config->getMaxDepth()) {
                 continue;
             }
 
