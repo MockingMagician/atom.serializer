@@ -3,6 +3,7 @@
 namespace MockingMagician\Atom\Serializer\Standardizer;
 
 
+use MockingMagician\Atom\Serializer\Exception\StandardizeValueImplementationException;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
 class ValueStandardizer implements ValueStandardizerInterface
@@ -27,6 +28,7 @@ class ValueStandardizer implements ValueStandardizerInterface
      *
      * @param $value
      * @return bool|int|float|string|array
+     * @throws StandardizeValueImplementationException
      * @throws \Exception
      */
     public function standardize($value)
@@ -46,6 +48,6 @@ class ValueStandardizer implements ValueStandardizerInterface
             return $value;
         }
 
-        throw new \Exception();
+        throw new StandardizeValueImplementationException($value);
     }
 }
