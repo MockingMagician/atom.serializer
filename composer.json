@@ -1,6 +1,7 @@
 {
     "name": "mocking-magician/atom-serializer",
-    "description": "Empty skelton for php library/project",
+    "type": "library",
+    "description": "Lightweight and simple library for object serializing",
     "authors": [
         {
             "name": "Marc MOREAU",
