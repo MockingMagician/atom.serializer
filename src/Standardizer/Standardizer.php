@@ -8,6 +8,7 @@
 
 namespace MockingMagician\Atom\Serializer\Standardizer;
 
+use MockingMagician\Atom\Serializer\Depth\DepthWatcher;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
 class Standardizer implements ValueStandardizerInterface
@@ -40,7 +41,7 @@ class Standardizer implements ValueStandardizerInterface
      */
     public function standardize($value)
     {
-        $vs = new ValueStandardizer(new ObjectRegister(), $this->config);
+        $vs = new ValueStandardizer(new ObjectRegister(), $this->config, new DepthWatcher());
 
         return $vs->standardize($value);
     }

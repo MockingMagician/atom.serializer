@@ -21,7 +21,7 @@ interface ValueStandardizerInterface
      *
      * @param mixed $value
      *
-     * @return array|bool|float|int|string|null
+     * @return null|array|bool|float|int|string
      */
     public function standardize($value);
 }

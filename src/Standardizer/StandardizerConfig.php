@@ -27,6 +27,8 @@ class StandardizerConfig
     private $continueOnException = [
         StandardizeValueImplementationException::class,
     ];
+    /** @var int */
+    private $maxDepth = 256;
 
     public function __construct()
     {
@@ -92,5 +94,21 @@ class StandardizerConfig
     public function getContinueOnException(): array
     {
         return $this->continueOnException;
+    }
+
+    public function getMaxDepth(): int
+    {
+        return $this->maxDepth;
+    }
+
+    public function setMaxDepth(int $maxDepth): self
+    {
+        if ($maxDepth < 1) {
+            throw new \UnexpectedValueException('`$maxDepth` have to be greater or equal to 1');
+        }
+
+        $this->maxDepth = $maxDepth;
+
+        return $this;
     }
 }

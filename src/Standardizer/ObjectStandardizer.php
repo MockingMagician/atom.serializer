@@ -8,17 +8,20 @@
 
 namespace MockingMagician\Atom\Serializer\Standardizer;
 
+use MockingMagician\Atom\Serializer\Depth\DepthWatcher;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
 class ObjectStandardizer implements ObjectStandardizerInterface
 {
     private $register;
     private $config;
+    private $depthWatcher;
 
-    public function __construct(ObjectRegister $register, StandardizerConfig $config)
+    public function __construct(ObjectRegister $register, StandardizerConfig $config, DepthWatcher $depthWatcher)
     {
         $this->register = $register;
         $this->config = $config;
+        $this->depthWatcher = $depthWatcher;
     }
 
     /**
@@ -84,7 +87,14 @@ class ObjectStandardizer implements ObjectStandardizerInterface
                 continue;
             }
 
-            $vs = new ValueStandardizer($this->register, $this->config);
+            $depthClone = clone $this->depthWatcher;
+            $depthClone->goDeeper();
+
+            if ($depthClone->getDepth() > $this->config->getMaxDepth()) {
+                continue;
+            }
+
+            $vs = new ValueStandardizer($this->register, $this->config, $depthClone);
 
             try {
                 $val = $vs->standardize($property->getValue($value));
@@ -119,6 +129,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
      * @param array|\Traversable $value
      *
      * @throws \Exception
+     * @throws \Throwable
      *
      * @return array
      */
@@ -127,11 +138,14 @@ class ObjectStandardizer implements ObjectStandardizerInterface
         $toReturn = [];
 
         foreach ($value as $k => $v) {
-            if ($this->register->isRegistered($v)) {
+            $depthClone = clone $this->depthWatcher;
+            $depthClone->goDeeper();
+
+            if ($depthClone->getDepth() > $this->config->getMaxDepth()) {
                 continue;
             }
 
-            $vs = new ValueStandardizer($this->register, $this->config);
+            $vs = new ValueStandardizer($this->register, $this->config, $depthClone);
             $val = $vs->standardize($v);
 
             foreach ($this->config->getValueFilters() as $valueFilter) {

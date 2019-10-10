@@ -8,6 +8,7 @@
 
 namespace MockingMagician\Atom\Serializer\Tests;
 
+use MockingMagician\Atom\Serializer\Depth\DepthWatcher;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 use MockingMagician\Atom\Serializer\Standardizer\ObjectStandardizer;
 use MockingMagician\Atom\Serializer\Standardizer\StandardizerConfig;
@@ -20,10 +21,11 @@ class ObjectStandardizerTest extends TestCase
 {
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function test standardize simple array(): void
     {
-        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
+        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig(), new DepthWatcher());
 
         $array = [
             'string',
@@ -36,10 +38,11 @@ class ObjectStandardizerTest extends TestCase
 
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function test standardize keys values array(): void
     {
-        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
+        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig(), new DepthWatcher());
 
         $array = [
             'string with no key',
@@ -54,10 +57,11 @@ class ObjectStandardizerTest extends TestCase
 
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function test standardize simple object(): void
     {
-        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
+        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig(), new DepthWatcher());
 
         $object = new class() {
             public $public;
@@ -84,10 +88,11 @@ class ObjectStandardizerTest extends TestCase
 
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function test standardize object infinite circular reference(): void
     {
-        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig());
+        $os = new ObjectStandardizer(new ObjectRegister(), new StandardizerConfig(), new DepthWatcher());
 
         $object = new class() {
             public $banalReference;
@@ -110,13 +115,14 @@ class ObjectStandardizerTest extends TestCase
 
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function test standardize object infinite circular reference accept most than one(): void
     {
         $sc = new StandardizerConfig();
         $sc->setMaxCircularReference(3);
 
-        $os = new ObjectStandardizer(new ObjectRegister(), $sc);
+        $os = new ObjectStandardizer(new ObjectRegister(), $sc, new DepthWatcher());
 
         $object = new class() {
             public $banalReference;
@@ -145,6 +151,7 @@ class ObjectStandardizerTest extends TestCase
 
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function test standardize object infinite circular reference with resolver(): void
     {
@@ -162,7 +169,7 @@ class ObjectStandardizerTest extends TestCase
         $sc = new StandardizerConfig();
         $sc->addCircularReferenceResolver(\get_class($object), function ($object) { return \get_class($object); });
 
-        $os = new ObjectStandardizer(new ObjectRegister(), $sc);
+        $os = new ObjectStandardizer(new ObjectRegister(), $sc, new DepthWatcher());
 
         static::assertEquals(
             [

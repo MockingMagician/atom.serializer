@@ -8,6 +8,7 @@
 
 namespace MockingMagician\Atom\Serializer\Standardizer;
 
+use MockingMagician\Atom\Serializer\Depth\DepthWatcher;
 use MockingMagician\Atom\Serializer\Exception\StandardizeValueImplementationException;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
@@ -15,11 +16,13 @@ class ValueStandardizer implements ValueStandardizerInterface
 {
     private $register;
     private $config;
+    private $depthLooker;
 
-    public function __construct(ObjectRegister $register, StandardizerConfig $config)
+    public function __construct(ObjectRegister $register, StandardizerConfig $config, DepthWatcher $depthLooker)
     {
         $this->register = $register;
         $this->config = $config;
+        $this->depthLooker = $depthLooker;
     }
 
     /**
@@ -37,12 +40,12 @@ class ValueStandardizer implements ValueStandardizerInterface
      * @throws \Exception
      * @throws \Throwable
      *
-     * @return array|bool|float|int|string|null
+     * @return null|array|bool|float|int|string
      */
     public function standardize($value)
     {
         if (\is_object($value) || \is_iterable($value)) {
-            $os = new ObjectStandardizer($this->register, $this->config);
+            $os = new ObjectStandardizer($this->register, $this->config, $this->depthLooker);
 
             return $os->standardize($value);
         }
@@ -51,7 +54,7 @@ class ValueStandardizer implements ValueStandardizerInterface
             || \is_int($value)
             || \is_float($value)
             || \is_string($value)
-            || \is_null($value)
+            || null === $value
         ) {
             return $value;
         }
