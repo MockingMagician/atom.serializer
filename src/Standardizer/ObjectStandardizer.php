@@ -38,12 +38,12 @@ class ObjectStandardizer implements ObjectStandardizerInterface
     {
         $this->register->register($value);
 
-        if (\is_object($value)) {
-            return $this->standardizeObject($value);
-        }
-
         if (\is_iterable($value)) {
             return $this->standardizeIterable($value);
+        }
+
+        if (\is_object($value)) {
+            return $this->standardizeObject($value);
         }
 
         throw new \Exception();
