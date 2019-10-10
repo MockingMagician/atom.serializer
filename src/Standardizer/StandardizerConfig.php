@@ -4,6 +4,7 @@ namespace MockingMagician\Atom\Serializer\Standardizer;
 
 
 use MockingMagician\Atom\Serializer\CircularReference\CircularReferenceResolver;
+use MockingMagician\Atom\Serializer\Exception\StandardizeValueImplementationException;
 use MockingMagician\Atom\Serializer\Filter\ObjectValueFilter;
 use MockingMagician\Atom\Serializer\Filter\ValueFilterInterface;
 
@@ -17,6 +18,10 @@ class StandardizerConfig
     private $maxCircularReference = 1;
     /** @var CircularReferenceResolver */
     private $circularReferenceResolver;
+    /** @var string[] containing class names for which we have to continue on exception */
+    private $continueOnException = [
+        StandardizeValueImplementationException::class,
+    ];
 
     public function __construct()
     {
@@ -77,5 +82,10 @@ class StandardizerConfig
     public function getCircularReferenceResolver(): CircularReferenceResolver
     {
         return $this->circularReferenceResolver;
+    }
+
+    public function getContinueOnException(): array
+    {
+        return $this->continueOnException;
     }
 }

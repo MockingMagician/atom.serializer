@@ -3,6 +3,7 @@
 namespace MockingMagician\Atom\Serializer\Standardizer;
 
 
+use MockingMagician\Atom\Serializer\Exception\StandardizeValueImplementationException;
 use MockingMagician\Atom\Serializer\Register\ObjectRegister;
 
 class ObjectStandardizer implements ObjectStandardizerInterface
@@ -43,6 +44,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
      * @return array
      * @throws \ReflectionException
      * @throws \Exception
+     * @throws \Throwable
      */
     private function standardizeObject($value): array
     {
@@ -74,7 +76,15 @@ class ObjectStandardizer implements ObjectStandardizerInterface
             }
 
             $vs = new ValueStandardizer($this->register, $this->config);
-            $val = $vs->standardize($property->getValue($value));
+            try {
+                $val = $vs->standardize($property->getValue($value));
+            } catch (\Throwable $e) {
+                if (in_array(get_class($e), $this->config->getContinueOnException(), true)) {
+                    continue;
+                }
+
+                throw $e;
+            }
 
             foreach ($this->config->getValueFilters() as $valueFilter) {
                 if (!$valueFilter->isValid($val)) {
