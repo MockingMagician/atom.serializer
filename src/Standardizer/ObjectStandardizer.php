@@ -19,7 +19,7 @@ class ObjectStandardizer implements ObjectStandardizerInterface
     /**
      * Standardize the input object and return an array
      *
-     * @param object|\Traversable $value
+     * @param array|object|\Traversable $value
      * @return array
      * @throws \Exception
      */
@@ -54,12 +54,27 @@ class ObjectStandardizer implements ObjectStandardizerInterface
         $rps = $rc->getProperties();
 
         foreach ($rps as $property) {
-            if ($this->register->isRegistered($property->getValue())) {
+            if ($property->isStatic()) {
+                continue;
+            }
+
+            $property->setAccessible(true);
+
+            if ($this->register->getRegisteredTimes($property->getValue($value))
+                >=
+                $this->config->getMaxCircularReference()
+            ) {
+                if ($this->config->getCircularReferenceResolver()->haveResolver($property->getValue($value))) {
+                    $toReturn[$property->getName()] =
+                        $this->config->getCircularReferenceResolver()->resolve($property->getValue($value))
+                    ;
+                }
+
                 continue;
             }
 
             $vs = new ValueStandardizer($this->register, $this->config);
-            $val = $vs->standardize($property->getValue());
+            $val = $vs->standardize($property->getValue($value));
 
             foreach ($this->config->getValueFilters() as $valueFilter) {
                 if (!$valueFilter->isValid($val)) {

@@ -27,7 +27,7 @@
 >
     <testsuites>
         <testsuite name="Global">
-            <directory>tests/src</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
