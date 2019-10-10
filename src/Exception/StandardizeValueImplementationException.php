@@ -13,6 +13,9 @@ class StandardizeValueImplementationException extends \Exception
         if (is_object($value)) {
             $type = get_class($value);
         }
+        if (is_resource($value)) {
+            $type .= '['.get_resource_type($value).']';
+        }
         $message = sprintf('Implementation for `%s` is not yet defined', $type);
         parent::__construct($message, $code, $previous);
     }
