@@ -68,8 +68,6 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
      */
     public function standardize($valueToStandardize)
     {
-        $exception = null;
-
         if ($this->goDeeper() > $this->getOptions()->getMaxDepth()) {
             $this->goHigher();
             if ($this->getOptions()->isExceptionOnMaxDepth()) {
@@ -78,6 +76,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
             return null;
         }
+        $this->goHigher();
 
         if (\is_object($valueToStandardize)) {
             $options = $this->getOptions();
@@ -96,17 +95,23 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             }
         }
 
+        $exception = null;
+        $standardizeSuccess = false;
         $this->goDeeper();
         foreach ($this->getStandardizers() as $standardizer) {
             try {
-                return $standardizer->standardize($valueToStandardize);
+                $standardizedValue = $standardizer->standardize($valueToStandardize);
+                $standardizeSuccess = true;
+
+                break;
             } catch (StandardizeException $exception) {
             }
         }
         $this->goHigher();
 
-        if ($exception) {
-            throw $exception;
+        if ($standardizeSuccess) {
+            /** @var mixed $standardizedValue */
+            return $standardizedValue;
         }
 
         throw StandardizeException::CanNotStandardize($valueToStandardize, $this, 0, $exception);

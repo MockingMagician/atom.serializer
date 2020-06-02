@@ -14,7 +14,6 @@ $finder = PhpCsFixer\Finder::create()
 $config = PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules([
-        '@Symfony' => true,
         '@PhpCsFixer' => true,
         'php_unit_test_class_requires_covers' => false,
         'yoda_style' => true,
@@ -23,6 +22,7 @@ $config = PhpCsFixer\Config::create()
                 '@internal',
             ],
         ],
+        'phpdoc_to_comment' => false,
         'final_internal_class' => false,
         'header_comment' => [
             'header' => implode("\n", [$author, $license, $link]),

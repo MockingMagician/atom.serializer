@@ -16,7 +16,7 @@ use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerInterface;
 class ObjectStandardizer extends AbstractCertifiedStandardizer implements GlobalStandardizerDependant
 {
     /**
-     * @var null|GlobalStandardizerInterface
+     * @var GlobalStandardizerInterface
      */
     private $globalStandardizer;
 
