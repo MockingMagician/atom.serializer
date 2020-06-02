@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
 namespace MockingMagician\Atom\Serializer\Standardize\Natural;
 
@@ -11,7 +16,7 @@ use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerInterface;
 class ObjectStandardizer extends AbstractCertifiedStandardizer implements GlobalStandardizerDependant
 {
     /**
-     * @var GlobalStandardizerInterface|null
+     * @var null|GlobalStandardizerInterface
      */
     private $globalStandardizer;
 
@@ -21,15 +26,16 @@ class ObjectStandardizer extends AbstractCertifiedStandardizer implements Global
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function canStandardize($valueToStandardize)
     {
-        return is_object($valueToStandardize);
+        return \is_object($valueToStandardize);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
+     *
      * @throws StandardizeException
      */
     public function standardize($valueToStandardize)
@@ -38,12 +44,12 @@ class ObjectStandardizer extends AbstractCertifiedStandardizer implements Global
 
         $toReturn = [];
         // Get the public properties
-        $properties = get_object_vars($valueToStandardize);
+        $properties = \get_object_vars($valueToStandardize);
         foreach ($properties as $property => $value) {
             $toReturn[$property] = $this->globalStandardizer->standardize($value);
         }
         // Get the properties based on methods
-        $methods = get_class_methods($valueToStandardize);
+        $methods = \get_class_methods($valueToStandardize);
         foreach ($methods as $method) {
             $toReturn[$method] = $this->globalStandardizer->standardize($valueToStandardize->{$method}());
         }
@@ -52,7 +58,7 @@ class ObjectStandardizer extends AbstractCertifiedStandardizer implements Global
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getGlobalStandardizer()
     {

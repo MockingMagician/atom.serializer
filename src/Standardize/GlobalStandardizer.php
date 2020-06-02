@@ -1,8 +1,12 @@
 <?php
 
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
 namespace MockingMagician\Atom\Serializer\Standardize;
-
 
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
 use MockingMagician\Atom\Serializer\Registry\ObjectRegistry;
@@ -33,18 +37,20 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
     /**
      * GlobalStandardizer constructor.
-     * @param array $standardizers class implemented at least CertifiedStandardizerInterface
+     *
+     * @param array                       $standardizers class implemented at least CertifiedStandardizerInterface
      * @param StandardizeOptionsInterface $options
      */
     public function __construct($standardizers, $options)
     {
         $this->standardizers = [];
         foreach ($standardizers as $standardizer) {
-            if (!is_subclass_of($standardizer, CertifiedStandardizerInterface::class)) {
+            if (!\is_subclass_of($standardizer, CertifiedStandardizerInterface::class)) {
                 continue;
             }
-            if (is_subclass_of($standardizer, GlobalStandardizerDependant::class)) {
+            if (\is_subclass_of($standardizer, GlobalStandardizerDependant::class)) {
                 $this->standardizers[] = new $standardizer($this);
+
                 continue;
             }
             $this->standardizers[] = new $standardizer();
@@ -55,8 +61,10 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
     /**
      * @param $valueToStandardize
-     * @return mixed
+     *
      * @throws StandardizeException
+     *
+     * @return mixed
      */
     public function standardize($valueToStandardize)
     {
@@ -66,12 +74,12 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             $this->goHigher();
             if ($this->getOptions()->isExceptionOnMaxDepth()) {
                 throw StandardizeException::MaxDepth($this->getOptions()->getMaxDepth());
-            } else {
-                return null;
             }
+
+            return null;
         }
 
-        if (is_object($valueToStandardize)) {
+        if (\is_object($valueToStandardize)) {
             $options = $this->getOptions();
 
             $this->registry = $this->getRegistry();
@@ -121,7 +129,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOptions()
     {
@@ -129,7 +137,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getDeep()
     {
@@ -137,7 +145,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function goDeeper()
     {
@@ -145,7 +153,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function goHigher()
     {

@@ -1,13 +1,20 @@
 <?php
 
-namespace MockingMagician\Atom\Serializer\Tests\Facade;
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
+namespace MockingMagician\Atom\Serializer\Tests\Facade;
 
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
 use MockingMagician\Atom\Serializer\Facade\Standardizer;
-use PhpBench\Tests\Unit\Benchmark\Remote\reflector\Class2;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 class StandardizerTest extends TestCase
 {
     private $standardizeTests;
@@ -18,7 +25,7 @@ class StandardizerTest extends TestCase
         $this->standardizeTests = [];
 
         $this->standardizeTests[] = [
-            'is' => new class {
+            'is' => new class() {
                 public $scalar = 1;
                 public $iterable = [
                     'long way' => [
@@ -32,9 +39,10 @@ class StandardizerTest extends TestCase
                     ],
                     'false' => false,
                 ];
+
                 public function getObject()
                 {
-                    return new class {
+                    return new class() {
                         public function getNull()
                         {
                             return null;
@@ -59,7 +67,7 @@ class StandardizerTest extends TestCase
                 'getObject' => [
                     'getNull' => null,
                 ],
-            ]
+            ],
         ];
     }
 

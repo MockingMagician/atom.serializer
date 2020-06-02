@@ -1,17 +1,21 @@
 <?php
 
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
 namespace MockingMagician\Atom\Serializer\Standardize\Natural;
-
 
 use MockingMagician\Atom\Serializer\Standardize\AbstractCertifiedStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerDependant;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerInterface;
 
-class IterableStandardizer extends AbstractCertifiedStandardizer implements  GlobalStandardizerDependant
+class IterableStandardizer extends AbstractCertifiedStandardizer implements GlobalStandardizerDependant
 {
     /**
-     * @var GlobalStandardizerInterface|null
+     * @var null|GlobalStandardizerInterface
      */
     private $globalStandardizer;
 
@@ -21,15 +25,15 @@ class IterableStandardizer extends AbstractCertifiedStandardizer implements  Glo
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function canStandardize($valueToStandardize)
     {
-        return is_iterable($valueToStandardize);
+        return \is_iterable($valueToStandardize);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getGlobalStandardizer()
     {
@@ -40,7 +44,7 @@ class IterableStandardizer extends AbstractCertifiedStandardizer implements  Glo
     {
         parent::standardize($valueToStandardize);
 
-        $toReturn= [];
+        $toReturn = [];
 
         foreach ($valueToStandardize as $k => $v) {
             $toReturn[$k] = $this->globalStandardizer->standardize($v);
@@ -48,6 +52,4 @@ class IterableStandardizer extends AbstractCertifiedStandardizer implements  Glo
 
         return $toReturn;
     }
-
-
 }
