@@ -7,6 +7,7 @@ $link = '@link https://github.com/MockingMagician/atom.serializer/blob/master/RE
 
 $finder = PhpCsFixer\Finder::create()
     ->exclude('vendor')
+    ->notPath(__FILE__)
     ->in(__DIR__)
 ;
 

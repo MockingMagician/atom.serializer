@@ -93,10 +93,13 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             try {
                 return $standardizer->standardize($valueToStandardize);
             } catch (StandardizeException $exception) {
-                dump(get_class($standardizer));
             }
         }
         $this->goHigher();
+
+        if ($exception) {
+            throw $exception;
+        }
 
         throw StandardizeException::CanNotStandardize($valueToStandardize, $this, 0, $exception);
     }

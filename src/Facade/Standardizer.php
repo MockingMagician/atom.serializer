@@ -6,6 +6,7 @@ namespace MockingMagician\Atom\Serializer\Facade;
 
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\Natural\IterableStandardizer;
+use MockingMagician\Atom\Serializer\Standardize\Natural\NullStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\Natural\ObjectStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\Natural\ScalarStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\Options\StandardizerOptions;
@@ -18,6 +19,7 @@ class Standardizer
             IterableStandardizer::class,
             ObjectStandardizer::class,
             ScalarStandardizer::class,
+            NullStandardizer::class,
         ], new StandardizerOptions());
     }
 }
