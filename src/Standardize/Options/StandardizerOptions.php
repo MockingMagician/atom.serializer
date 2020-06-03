@@ -27,15 +27,22 @@ class StandardizerOptions implements StandardizeOptionsInterface
      */
     private $isExceptionOnMaxDepth;
 
+    /**
+     * StandardizerOptions constructor.
+     * @param int $maxCircularReference
+     * @param CircularReferenceHandlerInterface[] $circularReferenceHandlers
+     * @param int $maxDepth
+     * @param bool $isExceptionOnMaxDepth
+     */
     public function __construct(
         $maxCircularReference = 1,
         $circularReferenceHandlers = [],
-        $manDepth = 256,
+        $maxDepth = 256,
         $isExceptionOnMaxDepth = false
     ) {
         $this->maxCircularReference = $maxCircularReference;
         $this->circularReferenceHandlers = $circularReferenceHandlers;
-        $this->maxDepth = $manDepth;
+        $this->maxDepth = $maxDepth;
         $this->isExceptionOnMaxDepth = $isExceptionOnMaxDepth;
     }
 

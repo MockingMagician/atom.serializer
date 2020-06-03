@@ -1,79 +1,53 @@
 <?php
 
-/**
- * @author Marc MOREAU <moreau.marc.web@gmail.com>
- * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
- * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
- */
-
-namespace MockingMagician\Atom\Serializer\Tests\Facade;
-
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
 use MockingMagician\Atom\Serializer\Facade\Standardizer;
-use PHPUnit\Framework\TestCase;
+use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizer;
+use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use PhpBench\Benchmark\Metadata\Annotations\Iterations;
+use PhpBench\Benchmark\Metadata\Annotations\Revs;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * @internal
+ * @BeforeMethods({"init"})
  */
-class StandardizerTest extends TestCase
+class StandardizeBench
 {
-    private $standardizeTests;
+    private $toStandardizeSimple;
+    private $toStandardizeComplex;
 
-    public function setUp(): void
+    /**
+     * @var GlobalStandardizer
+     */
+    private $standardizer;
+    /**
+     * @var Serializer
+     */
+    private $symSerial;
+
+    public function init()
     {
-        parent::setUp();
-        $this->standardizeTests = [];
 
-        $this->standardizeTests[] = [
-            'is' => new class() {
-                public $scalar = 1;
-                public $iterable = [
-                    'long way' => [
-                        'to catch' => true,
-                    ],
-                    'i' => [
-                        'am' => [
-                            'float' => 2.5,
-                            'int' => 45,
-                        ],
-                    ],
-                    'false' => false,
-                ];
-
-                public function getObject()
-                {
-                    return new class() {
-                        public function getNull()
-                        {
-                            return null;
-                        }
-                    };
-                }
-            },
-            'should' => [
-                'scalar' => 1,
-                'iterable' => [
-                    'long way' => [
-                        'to catch' => true,
-                    ],
-                    'i' => [
-                        'am' => [
-                            'float' => 2.5,
-                            'int' => 45,
-                        ],
-                    ],
-                    'false' => false,
+        $this->toStandardizeSimple = new class() {
+            public $scalar = 1;
+            public $iterable = [
+                'long way' => [
+                    'to catch' => true,
                 ],
-                'getObject' => [
-                    'getNull' => null,
+                'i' => [
+                    'am' => [
+                        'float' => 2.5,
+                        'int' => 45,
+                    ],
                 ],
-            ],
-        ];
+                'false' => false,
+                'go_deeper' => [],
+            ];
+        };
 
-        $this->standardizeTests[] = new class() {
+        $this->toStandardizeComplex = new class() {
             public $scalar = 1;
             public $iterable = [
                 'long way' => [
@@ -284,18 +258,49 @@ class StandardizerTest extends TestCase
                 };
             }
         };
+
+        $this->standardizer = Standardizer::getDefaultStandardizer();
+
+        $this->symSerial = new Symfony\Component\Serializer\Serializer([new ObjectNormalizer()]);
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
+     * @Revs(128)
+     * @Iterations(10)
      */
-    public function testStandardize()
+    public function benchStandardizeComplex()
     {
-        dump(Standardizer::getDefaultStandardizer()->standardize($this->standardizeTests[1]));
+        $this->standardizer->standardize($this->toStandardizeComplex);
+    }
 
-        static::assertSame(
-            $this->standardizeTests[0]['should'],
-            Standardizer::getDefaultStandardizer()->standardize($this->standardizeTests[0]['is'])
-        );
+    /**
+     * @throws Throwable
+     * @Revs(128)
+     * @Iterations(10)
+     */
+    public function benchStandardizeSimple()
+    {
+        $this->standardizer->standardize($this->toStandardizeSimple);
+    }
+
+    /**
+     * @throws ExceptionInterface
+     * @Revs(128)
+     * @Iterations(10)
+     */
+    public function benchSymfonyNormalizeComplex()
+    {
+        $this->symSerial->normalize($this->toStandardizeComplex);
+    }
+
+    /**
+     * @throws ExceptionInterface
+     * @Revs(128)
+     * @Iterations(10)
+     */
+    public function benchSymfonyNormalizeSimple()
+    {
+        $this->symSerial->normalize($this->toStandardizeSimple);
     }
 }

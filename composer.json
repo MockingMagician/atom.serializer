@@ -27,6 +27,7 @@
         "phpstan/phpstan": "^0.11",
         "friendsofphp/php-cs-fixer": "^2.13",
         "phpbench/phpbench": "@dev",
-        "symfony/var-dumper": "^5.1"
+        "symfony/var-dumper": "^5.1",
+        "symfony/serializer-pack": "^1.0"
     }
 }

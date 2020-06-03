@@ -11,7 +11,10 @@ namespace MockingMagician\Atom\Serializer\Standardize;
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
 use MockingMagician\Atom\Serializer\Registry\ObjectRegistry;
 use MockingMagician\Atom\Serializer\Registry\RegistryInterface;
+use MockingMagician\Atom\Serializer\Standardize\Options\CircularReferenceHandlerInterface;
 use MockingMagician\Atom\Serializer\Standardize\Options\StandardizeOptionsInterface;
+use Throwable;
+use function is_subclass_of;
 
 class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInterface
 {
@@ -45,10 +48,10 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     {
         $this->standardizers = [];
         foreach ($standardizers as $standardizer) {
-            if (!\is_subclass_of($standardizer, CertifiedStandardizerInterface::class)) {
+            if (!is_subclass_of($standardizer, CertifiedStandardizerInterface::class)) {
                 continue;
             }
-            if (\is_subclass_of($standardizer, GlobalStandardizerDependant::class)) {
+            if (is_subclass_of($standardizer, GlobalStandardizerDependant::class)) {
                 $this->standardizers[] = new $standardizer($this);
 
                 continue;
@@ -62,59 +65,58 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     /**
      * @param $valueToStandardize
      *
-     * @throws StandardizeException
-     *
      * @return mixed
+     * @throws Throwable
      */
     public function standardize($valueToStandardize)
     {
-        if ($this->goDeeper() > $this->getOptions()->getMaxDepth()) {
-            $this->goHigher();
-            if ($this->getOptions()->isExceptionOnMaxDepth()) {
-                throw StandardizeException::MaxDepth($this->getOptions()->getMaxDepth());
-            }
+        try {
+            $standardized = $this->internalStandardize($valueToStandardize);
+            $this->dealWithResetRegistry();
+            return $standardized;
+        } catch (Throwable $exception) {
+            $this->registry = new ObjectRegistry();
+            throw $exception;
+        }
+    }
 
+    /**
+     * @param $valueToStandardize
+     * @return array|mixed|null
+     * @throws StandardizeException
+     * @throws Throwable
+     */
+    public function internalStandardize($valueToStandardize)
+    {
+        if (is_scalar($valueToStandardize) || null === $valueToStandardize) {
+            return $valueToStandardize;
+        }
+
+        $this->goDeeper();
+        if (!$this->dealWithDepth()) {
+            $this->goHigher();
             return null;
         }
+
+        if (is_iterable($valueToStandardize)) {
+            $toReturn = [];
+            foreach ($valueToStandardize as $k => $value) {
+                $toReturn[$k] = $this->standardize($value);
+            }
+            $this->goHigher();
+
+            return $toReturn;
+        }
+
+        if ($handler = $this->dealWithCircular($valueToStandardize)) {
+            return $handler->handle($valueToStandardize);
+        }
+
+        $standardizer = $this->getStandardizer($valueToStandardize);
+        $standardizedValue = $standardizer->standardize($valueToStandardize);
         $this->goHigher();
 
-        if (\is_object($valueToStandardize)) {
-            $options = $this->getOptions();
-
-            $this->registry = $this->getRegistry();
-            $this->registry->register($valueToStandardize);
-
-            if ($this->registry->countRegisterTime($valueToStandardize) > $options->getMaxCircularReference()) {
-                foreach ($options->getCircularReferenceHandlers() as $circularReferenceHandler) {
-                    if ($circularReferenceHandler->canHandle($circularReferenceHandler)) {
-                        return $circularReferenceHandler->handle($valueToStandardize);
-                    }
-                }
-
-                throw StandardizeException::CircularReference();
-            }
-        }
-
-        $exception = null;
-        $standardizeSuccess = false;
-        $this->goDeeper();
-        foreach ($this->getStandardizers() as $standardizer) {
-            try {
-                $standardizedValue = $standardizer->standardize($valueToStandardize);
-                $standardizeSuccess = true;
-
-                break;
-            } catch (StandardizeException $exception) {
-            }
-        }
-        $this->goHigher();
-
-        if ($standardizeSuccess) {
-            /** @var mixed $standardizedValue */
-            return $standardizedValue;
-        }
-
-        throw StandardizeException::CanNotStandardize($valueToStandardize, $this, 0, $exception);
+        return $standardizedValue;
     }
 
     /**
@@ -163,5 +165,70 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     public function goHigher()
     {
         return --$this->deep;
+    }
+
+    /**
+     * @return bool
+     * @throws StandardizeException
+     */
+    private function dealWithDepth()
+    {
+        if ($this->getDeep() > $this->getOptions()->getMaxDepth()) {
+            if ($this->getOptions()->isExceptionOnMaxDepth()) {
+                throw StandardizeException::MaxDepth($this->getOptions()->getMaxDepth());
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param mixed $valueToStandardize
+     * @return bool|CircularReferenceHandlerInterface
+     * @throws StandardizeException
+     */
+    private function dealWithCircular($valueToStandardize)
+    {
+        $options = $this->getOptions();
+        $this->registry = $this->getRegistry();
+        $this->registry->register($valueToStandardize);
+
+        if ($this->registry->countRegisterTime($valueToStandardize) > $options->getMaxCircularReference()) {
+            foreach ($options->getCircularReferenceHandlers() as $circularReferenceHandler) {
+                if ($circularReferenceHandler->canHandle($circularReferenceHandler)) {
+                    return $circularReferenceHandler;
+                }
+            }
+
+            throw StandardizeException::CircularReference();
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $valueToStandardize
+     * @return CertifiedStandardizerInterface
+     * @throws StandardizeException
+     */
+    private function getStandardizer($valueToStandardize)
+    {
+        foreach ($this->getStandardizers() as $standardizer) {
+            if ($standardizer->canStandardize($valueToStandardize)) {
+                return $standardizer;
+            }
+        }
+
+        throw StandardizeException::CanNotStandardize($valueToStandardize, $this);
+    }
+
+    private function dealWithResetRegistry()
+    {
+        if ($this->getDeep() === 0) {
+            // reset registry, cause standardize it's on his end
+            $this->registry = new ObjectRegistry();
+        }
     }
 }

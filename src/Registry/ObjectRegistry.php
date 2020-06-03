@@ -20,7 +20,7 @@ class ObjectRegistry implements RegistryInterface
         $key = \spl_object_hash($object);
 
         if (!isset($this->registry[$key])) {
-            $this->registry[$key] = 0;
+            $this->registry[$key] = 1;
 
             return;
         }

@@ -35,13 +35,9 @@ class ObjectStandardizer extends AbstractCertifiedStandardizer implements Global
 
     /**
      * {@inheritdoc}
-     *
-     * @throws StandardizeException
      */
     public function standardize($valueToStandardize)
     {
-        parent::standardize($valueToStandardize);
-
         $toReturn = [];
         // Get the public properties
         $properties = \get_object_vars($valueToStandardize);
