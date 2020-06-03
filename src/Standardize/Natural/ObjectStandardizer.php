@@ -8,12 +8,11 @@
 
 namespace MockingMagician\Atom\Serializer\Standardize\Natural;
 
-use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
-use MockingMagician\Atom\Serializer\Standardize\AbstractCertifiedStandardizer;
+use MockingMagician\Atom\Serializer\Standardize\CertifiedStandardizerInterface;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerDependant;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerInterface;
 
-class ObjectStandardizer extends AbstractCertifiedStandardizer implements GlobalStandardizerDependant
+class ObjectStandardizer implements CertifiedStandardizerInterface, GlobalStandardizerDependant
 {
     /**
      * @var GlobalStandardizerInterface
@@ -46,6 +45,13 @@ class ObjectStandardizer extends AbstractCertifiedStandardizer implements Global
         }
         // Get the properties based on methods
         $methods = \get_class_methods($valueToStandardize);
+        $methods = array_filter($methods, function ($val) {
+            if (preg_match('#^__#', $val)) {
+                return false;
+            }
+
+            return true;
+        });
         foreach ($methods as $method) {
             $toReturn[$method] = $this->globalStandardizer->standardize($valueToStandardize->{$method}());
         }

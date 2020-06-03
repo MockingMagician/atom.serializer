@@ -26,7 +26,7 @@ interface GlobalStandardizerInterface extends StandardizerInterface
     /**
      * @return int
      */
-    public function getDeep();
+    public function getDepth();
 
     /**
      * @return int

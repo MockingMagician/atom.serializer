@@ -36,7 +36,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     /**
      * @var int
      */
-    private $deep = 0;
+    private $depth = 0;
 
     /**
      * GlobalStandardizer constructor.
@@ -73,6 +73,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
         try {
             $standardized = $this->internalStandardize($valueToStandardize);
             $this->dealWithResetRegistry();
+
             return $standardized;
         } catch (Throwable $exception) {
             $this->registry = new ObjectRegistry();
@@ -146,9 +147,9 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     /**
      * {@inheritdoc}
      */
-    public function getDeep()
+    public function getDepth()
     {
-        return $this->deep;
+        return $this->depth;
     }
 
     /**
@@ -156,7 +157,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
      */
     public function goDeeper()
     {
-        return ++$this->deep;
+        return ++$this->depth;
     }
 
     /**
@@ -164,7 +165,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
      */
     public function goHigher()
     {
-        return --$this->deep;
+        return --$this->depth;
     }
 
     /**
@@ -173,7 +174,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
      */
     private function dealWithDepth()
     {
-        if ($this->getDeep() > $this->getOptions()->getMaxDepth()) {
+        if ($this->getDepth() > $this->getOptions()->getMaxDepth()) {
             if ($this->getOptions()->isExceptionOnMaxDepth()) {
                 throw StandardizeException::MaxDepth($this->getOptions()->getMaxDepth());
             }
@@ -196,6 +197,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
         $this->registry->register($valueToStandardize);
 
         if ($this->registry->countRegisterTime($valueToStandardize) > $options->getMaxCircularReference()) {
+            dump($this->registry);
             foreach ($options->getCircularReferenceHandlers() as $circularReferenceHandler) {
                 if ($circularReferenceHandler->canHandle($circularReferenceHandler)) {
                     return $circularReferenceHandler;
@@ -226,7 +228,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
     private function dealWithResetRegistry()
     {
-        if ($this->getDeep() === 0) {
+        if ($this->getDepth() === 0) {
             // reset registry, cause standardize it's on his end
             $this->registry = new ObjectRegistry();
         }

@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Throwable;
 
 /**
  * @internal
@@ -287,7 +288,7 @@ class StandardizerTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function testStandardize()
     {

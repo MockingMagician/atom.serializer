@@ -20,12 +20,17 @@ class ObjectRegistry implements RegistryInterface
         $key = \spl_object_hash($object);
 
         if (!isset($this->registry[$key])) {
-            $this->registry[$key] = 1;
+            $this->registry[$key] = [
+                'objects' => [$object],
+                'counts' => [1],
+            ];
 
             return;
         }
 
-        ++$this->registry[$key];
+        $k = array_search($object, $this->registry[$key]['objects'], true);
+
+        ++$this->registry[$key]['counts'][$k];
     }
 
     /**
@@ -33,7 +38,13 @@ class ObjectRegistry implements RegistryInterface
      */
     public function isRegistered($object)
     {
-        return isset($this->registry[\spl_object_hash($object)]);
+        $key = \spl_object_hash($object);
+
+        if (!isset($this->registry[$key])) {
+            return false;
+        }
+
+        return array_search($object, $this->registry[$key]['objects'], true);
     }
 
     /**
@@ -41,6 +52,13 @@ class ObjectRegistry implements RegistryInterface
      */
     public function countRegisterTime($object)
     {
-        return $this->isRegistered($object) ? $this->registry[\spl_object_hash($object)] : 0;
+        if (!$this->isRegistered($object)) {
+            return 0;
+        }
+
+        $key = \spl_object_hash($object);
+        $k = array_search($object, $this->registry[$key]['objects'], true);
+
+        return $this->registry[$key]['counts'][$k];
     }
 }
