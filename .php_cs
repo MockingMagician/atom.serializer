@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 $author = '@author Marc MOREAU <moreau.marc.web@gmail.com>';
@@ -11,7 +10,7 @@ $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
 ;
 
-$config = PhpCsFixer\Config::create()
+return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules([
         '@PhpCsFixer' => true,
@@ -29,7 +28,4 @@ $config = PhpCsFixer\Config::create()
             'comment_type' => 'PHPDoc',
         ],
     ])
-    ->setFinder($finder)
-;
-
-return $config;
+    ->setFinder($finder);

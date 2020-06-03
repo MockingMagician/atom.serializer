@@ -9,6 +9,7 @@
 namespace MockingMagician\Atom\Serializer\Standardize;
 
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
+use MockingMagician\Atom\Serializer\Exceptions\ThrowExceptionFactory;
 use MockingMagician\Atom\Serializer\Registry\ObjectRegistry;
 use MockingMagician\Atom\Serializer\Registry\RegistryInterface;
 use MockingMagician\Atom\Serializer\Standardize\Options\CircularReferenceHandlerInterface;
@@ -176,7 +177,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     {
         if ($this->getDepth() > $this->getOptions()->getMaxDepth()) {
             if ($this->getOptions()->isExceptionOnMaxDepth()) {
-                throw StandardizeException::MaxDepth($this->getOptions()->getMaxDepth());
+                ThrowExceptionFactory::maxDepthReached($this->getOptions()->getMaxDepth());
             }
 
             return false;
@@ -197,14 +198,16 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
         $this->registry->register($valueToStandardize);
 
         if ($this->registry->countRegisterTime($valueToStandardize) > $options->getMaxCircularReference()) {
-            dump($this->registry);
             foreach ($options->getCircularReferenceHandlers() as $circularReferenceHandler) {
                 if ($circularReferenceHandler->canHandle($circularReferenceHandler)) {
                     return $circularReferenceHandler;
                 }
             }
 
-            throw StandardizeException::CircularReference();
+            ThrowExceptionFactory::circularReferenceNotHandled(
+                $valueToStandardize,
+                $options->getMaxCircularReference()
+            );
         }
 
         return false;
@@ -223,7 +226,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             }
         }
 
-        throw StandardizeException::CanNotStandardize($valueToStandardize, $this);
+        ThrowExceptionFactory::standardizerNotFound($valueToStandardize);
     }
 
     private function dealWithResetRegistry()
