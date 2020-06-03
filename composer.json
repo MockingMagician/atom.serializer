@@ -29,6 +29,7 @@
         "friendsofphp/php-cs-fixer": "^2.13",
         "phpbench/phpbench": "@dev",
         "symfony/var-dumper": "^5.1",
-        "symfony/serializer-pack": "^1.0"
+        "symfony/serializer-pack": "^1.0",
+        "fzaninotto/faker": "^1.9"
     }
 }

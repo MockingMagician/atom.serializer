@@ -8,12 +8,9 @@
 
 namespace MockingMagician\Atom\Serializer\Tests\Facade;
 
-use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
 use MockingMagician\Atom\Serializer\Facade\Standardizer;
+use MockingMagician\Atom\Serializer\Tests\TestHelper\ObjectBuilder;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Throwable;
 
 /**
@@ -292,7 +289,7 @@ class StandardizerTest extends TestCase
      */
     public function testStandardize()
     {
-        dump(Standardizer::getDefaultStandardizer()->standardize($this->standardizeTests[1]));
+        dump(Standardizer::getDefaultStandardizer()->standardize(new ObjectBuilder(true, true)));
 
         static::assertSame(
             $this->standardizeTests[0]['should'],

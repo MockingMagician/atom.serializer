@@ -8,14 +8,13 @@
 
 namespace MockingMagician\Atom\Serializer\Standardize;
 
+use Exception;
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
 use MockingMagician\Atom\Serializer\Exceptions\ThrowExceptionFactory;
 use MockingMagician\Atom\Serializer\Registry\ObjectRegistry;
 use MockingMagician\Atom\Serializer\Registry\RegistryInterface;
 use MockingMagician\Atom\Serializer\Standardize\Options\CircularReferenceHandlerInterface;
 use MockingMagician\Atom\Serializer\Standardize\Options\StandardizeOptionsInterface;
-use Throwable;
-use function is_subclass_of;
 
 class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInterface
 {
@@ -49,10 +48,10 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     {
         $this->standardizers = [];
         foreach ($standardizers as $standardizer) {
-            if (!is_subclass_of($standardizer, CertifiedStandardizerInterface::class)) {
+            if (!\is_subclass_of($standardizer, CertifiedStandardizerInterface::class)) {
                 continue;
             }
-            if (is_subclass_of($standardizer, GlobalStandardizerDependant::class)) {
+            if (\is_subclass_of($standardizer, GlobalStandardizerDependant::class)) {
                 $this->standardizers[] = new $standardizer($this);
 
                 continue;
@@ -66,8 +65,9 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     /**
      * @param $valueToStandardize
      *
+     * @throws Exception
+     *
      * @return mixed
-     * @throws Throwable
      */
     public function standardize($valueToStandardize)
     {
@@ -76,31 +76,34 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             $this->dealWithResetRegistry();
 
             return $standardized;
-        } catch (Throwable $exception) {
+        } catch (Exception $exception) {
             $this->registry = new ObjectRegistry();
+
             throw $exception;
         }
     }
 
     /**
      * @param $valueToStandardize
-     * @return array|mixed|null
+     *
      * @throws StandardizeException
-     * @throws Throwable
+     *
+     * @return null|array|mixed
      */
     public function internalStandardize($valueToStandardize)
     {
-        if (is_scalar($valueToStandardize) || null === $valueToStandardize) {
+        if (\is_scalar($valueToStandardize) || null === $valueToStandardize) {
             return $valueToStandardize;
         }
 
         $this->goDeeper();
         if (!$this->dealWithDepth()) {
             $this->goHigher();
+
             return null;
         }
 
-        if (is_iterable($valueToStandardize)) {
+        if (\is_iterable($valueToStandardize)) {
             $toReturn = [];
             foreach ($valueToStandardize as $k => $value) {
                 $toReturn[$k] = $this->standardize($value);
@@ -170,8 +173,9 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     }
 
     /**
-     * @return bool
      * @throws StandardizeException
+     *
+     * @return bool
      */
     private function dealWithDepth()
     {
@@ -188,8 +192,10 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
     /**
      * @param mixed $valueToStandardize
-     * @return bool|CircularReferenceHandlerInterface
+     *
      * @throws StandardizeException
+     *
+     * @return bool|CircularReferenceHandlerInterface
      */
     private function dealWithCircular($valueToStandardize)
     {
@@ -215,8 +221,10 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
     /**
      * @param $valueToStandardize
-     * @return CertifiedStandardizerInterface
+     *
      * @throws StandardizeException
+     *
+     * @return CertifiedStandardizerInterface
      */
     private function getStandardizer($valueToStandardize)
     {
@@ -231,7 +239,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
 
     private function dealWithResetRegistry()
     {
-        if ($this->getDepth() === 0) {
+        if (0 === $this->getDepth()) {
             // reset registry, cause standardize it's on his end
             $this->registry = new ObjectRegistry();
         }

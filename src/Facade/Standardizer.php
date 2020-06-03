@@ -12,6 +12,7 @@ use MockingMagician\Atom\Serializer\Standardize\CertifiedStandardizerInterface;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\Natural\ObjectStandardizer;
 use MockingMagician\Atom\Serializer\Standardize\Options\CircularReferenceHandlerInterface;
+use MockingMagician\Atom\Serializer\Standardize\Options\StandardizeOptionsInterface;
 use MockingMagician\Atom\Serializer\Standardize\Options\StandardizerOptions;
 
 class Standardizer
@@ -25,7 +26,8 @@ class Standardizer
 
     /**
      * @param CertifiedStandardizerInterface[] $standardizers
-     * @param null|GlobalStandardizer $options
+     * @param StandardizeOptionsInterface          $options
+     *
      * @return GlobalStandardizer
      */
     public function createStandardizer($standardizers, $options = null)
@@ -38,10 +40,10 @@ class Standardizer
     }
 
     /**
-     * @param int $maxCircularReference
+     * @param int                                 $maxCircularReference
      * @param CircularReferenceHandlerInterface[] $circularReferenceHandlers
-     * @param int $maxDepth
-     * @param bool $isExceptionOnMaxDepth
+     * @param int                                 $maxDepth
+     * @param bool                                $isExceptionOnMaxDepth
      *
      * @return StandardizerOptions
      */

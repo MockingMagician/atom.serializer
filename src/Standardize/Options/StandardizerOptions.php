@@ -29,10 +29,11 @@ class StandardizerOptions implements StandardizeOptionsInterface
 
     /**
      * StandardizerOptions constructor.
-     * @param int $maxCircularReference
+     *
+     * @param int                                 $maxCircularReference
      * @param CircularReferenceHandlerInterface[] $circularReferenceHandlers
-     * @param int $maxDepth
-     * @param bool $isExceptionOnMaxDepth
+     * @param int                                 $maxDepth
+     * @param bool                                $isExceptionOnMaxDepth
      */
     public function __construct(
         $maxCircularReference = 1,

@@ -14,14 +14,14 @@ class StandardizeException extends Exception
 {
     protected static function typeGetter($value)
     {
-        if (is_object($value)) {
-            return get_class($value);
+        if (\is_object($value)) {
+            return \get_class($value);
         }
 
-        if (is_resource($value)) {
-            return get_resource_type($value);
+        if (\is_resource($value)) {
+            return \get_resource_type($value);
         }
 
-        return gettype($value);
+        return \gettype($value);
     }
 }

@@ -45,8 +45,9 @@ class ObjectStandardizer implements CertifiedStandardizerInterface, GlobalStanda
         }
         // Get the properties based on methods
         $methods = \get_class_methods($valueToStandardize);
-        $methods = array_filter($methods, function ($val) {
-            if (preg_match('#^__#', $val)) {
+        // Filter public internal methods
+        $methods = \array_filter($methods, function ($val) {
+            if (\preg_match('#^__#', $val)) {
                 return false;
             }
 

@@ -28,7 +28,7 @@ class ObjectRegistry implements RegistryInterface
             return;
         }
 
-        $k = array_search($object, $this->registry[$key]['objects'], true);
+        $k = \array_search($object, $this->registry[$key]['objects'], true);
 
         ++$this->registry[$key]['counts'][$k];
     }
@@ -44,7 +44,7 @@ class ObjectRegistry implements RegistryInterface
             return false;
         }
 
-        return array_search($object, $this->registry[$key]['objects'], true);
+        return \array_search($object, $this->registry[$key]['objects'], true);
     }
 
     /**
@@ -57,7 +57,7 @@ class ObjectRegistry implements RegistryInterface
         }
 
         $key = \spl_object_hash($object);
-        $k = array_search($object, $this->registry[$key]['objects'], true);
+        $k = \array_search($object, $this->registry[$key]['objects'], true);
 
         return $this->registry[$key]['counts'][$k];
     }

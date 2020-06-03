@@ -1,6 +1,11 @@
 <?php
 
-use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
+
 use MockingMagician\Atom\Serializer\Facade\Standardizer;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizer;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -29,7 +34,6 @@ class StandardizeBench
 
     public function init()
     {
-
         $this->toStandardizeSimple = new class() {
             public $scalar = 1;
             public $iterable = [
@@ -47,217 +51,7 @@ class StandardizeBench
             ];
         };
 
-        $this->toStandardizeComplex = new class() {
-            public $scalar = 1;
-            public $iterable = [
-                'long way' => [
-                    'to catch' => true,
-                ],
-                'i' => [
-                    'am' => [
-                        'float' => 2.5,
-                        'int' => 45,
-                    ],
-                ],
-                'false' => false,
-                'go_deeper' => [],
-            ];
-
-            public function __construct()
-            {
-                $this->iterable['go_deeper'] = new class() {
-                    public $scalar = 1;
-                    public $iterable = [
-                        'long way' => [
-                            'to catch' => true,
-                        ],
-                        'i' => [
-                            'am' => [
-                                'float' => 2.5,
-                                'int' => 45,
-                            ],
-                        ],
-                        'false' => false,
-                        'go_deeper' => [],
-                    ];
-
-                    public function __construct()
-                    {
-                        $this->iterable['go_deeper'] = new class() {
-                            public $scalar = 1;
-                            public $iterable = [
-                                'long way' => [
-                                    'to catch' => true,
-                                ],
-                                'i' => [
-                                    'am' => [
-                                        'float' => 2.5,
-                                        'int' => 45,
-                                    ],
-                                ],
-                                'false' => false,
-                                'go_deeper' => [],
-                            ];
-
-                            public function __construct()
-                            {
-                                $this->iterable['go_deeper'] = new class() {
-                                    public $scalar = 1;
-                                    public $iterable = [
-                                        'long way' => [
-                                            'to catch' => true,
-                                        ],
-                                        'i' => [
-                                            'am' => [
-                                                'float' => 2.5,
-                                                'int' => 45,
-                                            ],
-                                        ],
-                                        'false' => false,
-                                        'go_deeper' => [],
-                                    ];
-
-                                    public function __construct()
-                                    {
-                                        $this->iterable['go_deeper'] = new class() {
-                                            public $scalar = 1;
-                                            public $iterable = [
-                                                'long way' => [
-                                                    'to catch' => true,
-                                                ],
-                                                'i' => [
-                                                    'am' => [
-                                                        'float' => 2.5,
-                                                        'int' => 45,
-                                                    ],
-                                                ],
-                                                'false' => false,
-                                                'go_deeper' => [],
-                                            ];
-
-                                            public function __construct()
-                                            {
-                                                $this->iterable['go_deeper'] = new class() {
-                                                    public $scalar = 1;
-                                                    public $iterable = [
-                                                        'long way' => [
-                                                            'to catch' => true,
-                                                        ],
-                                                        'i' => [
-                                                            'am' => [
-                                                                'float' => 2.5,
-                                                                'int' => 45,
-                                                            ],
-                                                        ],
-                                                        'false' => false,
-                                                        'go_deeper' => [],
-                                                    ];
-
-                                                    public function __construct()
-                                                    {
-                                                        $this->iterable['go_deeper'] = new class() {
-                                                            public $scalar = 1;
-                                                            public $iterable = [
-                                                                'long way' => [
-                                                                    'to catch' => true,
-                                                                ],
-                                                                'i' => [
-                                                                    'am' => [
-                                                                        'float' => 2.5,
-                                                                        'int' => 45,
-                                                                    ],
-                                                                ],
-                                                                'false' => false,
-                                                                'go_deeper' => [],
-                                                            ];
-
-                                                            public function __construct()
-                                                            {
-                                                                $this->iterable['go_deeper'] = [];
-                                                            }
-
-                                                            public function getObject()
-                                                            {
-                                                                return new class() {
-                                                                    public function getNull()
-                                                                    {
-                                                                        return null;
-                                                                    }
-                                                                };
-                                                            }
-                                                        };
-                                                    }
-
-                                                    public function getObject()
-                                                    {
-                                                        return new class() {
-                                                            public function getNull()
-                                                            {
-                                                                return null;
-                                                            }
-                                                        };
-                                                    }
-                                                };
-                                            }
-
-                                            public function getObject()
-                                            {
-                                                return new class() {
-                                                    public function getNull()
-                                                    {
-                                                        return null;
-                                                    }
-                                                };
-                                            }
-                                        };
-                                    }
-
-                                    public function getObject()
-                                    {
-                                        return new class() {
-                                            public function getNull()
-                                            {
-                                                return null;
-                                            }
-                                        };
-                                    }
-                                };
-                            }
-
-                            public function getObject()
-                            {
-                                return new class() {
-                                    public function getNull()
-                                    {
-                                        return null;
-                                    }
-                                };
-                            }
-                        };
-                    }
-
-                    public function getObject()
-                    {
-                        return new class() {
-                            public function getNull()
-                            {
-                                return null;
-                            }
-                        };
-                    }
-                };
-            }
-
-            public function getObject()
-            {
-                return new class() {
-                    public function getNull()
-                    {
-                        return null;
-                    }
-                };
-            }
-        };
+        $this->toStandardizeComplex = new \MockingMagician\Atom\Serializer\Tests\TestHelper\ObjectBuilder(true, true);
 
         $this->standardizer = Standardizer::getDefaultStandardizer();
 
