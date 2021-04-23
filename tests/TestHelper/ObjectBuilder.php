@@ -1,8 +1,12 @@
 <?php
 
+/**
+ * @author Marc MOREAU <moreau.marc.web@gmail.com>
+ * @license https://github.com/MockingMagician/atom.serializer/blob/master/LICENSE.md CC-BY-SA-4.0
+ * @link https://github.com/MockingMagician/atom.serializer/blob/master/README.md
+ */
 
 namespace MockingMagician\Atom\Serializer\Tests\TestHelper;
-
 
 use Faker\Factory;
 use Faker\Generator;
@@ -29,38 +33,6 @@ class ObjectBuilder
         $this->randomDataReferenceThis = $randomDataReferenceThis;
     }
 
-    private function array($length = 5, $deep = 10)
-    {
-        $array = [];
-        $lengthCopy = $length;
-        while ($lengthCopy--) {
-            if ($deep > 1) {
-                $array[$this->faker->uuid] = $this->array($length, ($deep - 1));
-                continue;
-            }
-            $array[$this->faker->uuid] = $this->randomData($this->randomDataReferenceThis);
-        }
-
-        return $array;
-    }
-
-    private function randomData($referenceThis = false)
-    {
-        $list = [
-            $this->faker->text,
-            $this->faker->randomDigit,
-            $this->faker->randomFloat(),
-            $this->faker->boolean,
-            null,
-        ];
-
-        if ($referenceThis) {
-            $list[] = new $this();
-        }
-
-        return $list[rand(0, count($list) - 1)];
-    }
-
     public function getInt()
     {
         return $this->faker->randomDigit;
@@ -83,11 +55,44 @@ class ObjectBuilder
 
     public function getObjectOrNull()
     {
-        return $this->getObjectReturnObject ? new self([true, false][rand(0, 1)]) : null;
+        return $this->getObjectReturnObject ? new self([true, false][\rand(0, 1)]) : null;
     }
 
     public function getArray()
     {
         return $this->array(2, 2);
+    }
+
+    private function array($length = 5, $deep = 10)
+    {
+        $array = [];
+        $lengthCopy = $length;
+        while ($lengthCopy--) {
+            if ($deep > 1) {
+                $array[$this->faker->uuid] = $this->array($length, ($deep - 1));
+
+                continue;
+            }
+            $array[$this->faker->uuid] = $this->randomData($this->randomDataReferenceThis);
+        }
+
+        return $array;
+    }
+
+    private function randomData($referenceThis = false)
+    {
+        $list = [
+            $this->faker->text,
+            $this->faker->randomDigit,
+            $this->faker->randomFloat(),
+            $this->faker->boolean,
+            null,
+        ];
+
+        if ($referenceThis) {
+            $list[] = new $this();
+        }
+
+        return $list[\rand(0, \count($list) - 1)];
     }
 }

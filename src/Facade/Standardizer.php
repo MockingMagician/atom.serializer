@@ -26,7 +26,7 @@ class Standardizer
 
     /**
      * @param CertifiedStandardizerInterface[] $standardizers
-     * @param StandardizeOptionsInterface          $options
+     * @param StandardizeOptionsInterface      $options
      *
      * @return GlobalStandardizer
      */

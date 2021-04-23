@@ -9,8 +9,9 @@
 namespace MockingMagician\Atom\Serializer\Standardize;
 
 use Exception;
+use MockingMagician\Atom\Serializer\Exceptions\ExceptionFactory;
 use MockingMagician\Atom\Serializer\Exceptions\StandardizeException;
-use MockingMagician\Atom\Serializer\Exceptions\ThrowExceptionFactory;
+use MockingMagician\Atom\Serializer\Path\PathsNode;
 use MockingMagician\Atom\Serializer\Registry\ObjectRegistry;
 use MockingMagician\Atom\Serializer\Registry\RegistryInterface;
 use MockingMagician\Atom\Serializer\Standardize\Options\CircularReferenceHandlerInterface;
@@ -39,6 +40,11 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     private $depth = 0;
 
     /**
+     * @var PathsNode
+     */
+    private $pathsNodeObjectRegistry;
+
+    /**
      * GlobalStandardizer constructor.
      *
      * @param array                       $standardizers class implemented at least CertifiedStandardizerInterface
@@ -58,6 +64,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             }
             $this->standardizers[] = new $standardizer();
         }
+        $this->pathsNodeObjectRegistry = new PathsNode();
         $this->registry = new ObjectRegistry();
         $this->options = $options;
     }
@@ -86,6 +93,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     /**
      * @param $valueToStandardize
      *
+     * @throws Exception
      * @throws StandardizeException
      *
      * @return null|array|mixed
@@ -181,7 +189,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     {
         if ($this->getDepth() > $this->getOptions()->getMaxDepth()) {
             if ($this->getOptions()->isExceptionOnMaxDepth()) {
-                ThrowExceptionFactory::maxDepthReached($this->getOptions()->getMaxDepth());
+                throw ExceptionFactory::maxDepthReached($this->getOptions()->getMaxDepth());
             }
 
             return false;
@@ -200,17 +208,16 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
     private function dealWithCircular($valueToStandardize)
     {
         $options = $this->getOptions();
-        $this->registry = $this->getRegistry();
-        $this->registry->register($valueToStandardize);
+        $this->getRegistry()->register($valueToStandardize);
 
-        if ($this->registry->countRegisterTime($valueToStandardize) > $options->getMaxCircularReference()) {
+        if ($this->getRegistry()->countRegisterTime($valueToStandardize) > $options->getMaxCircularReference()) {
             foreach ($options->getCircularReferenceHandlers() as $circularReferenceHandler) {
                 if ($circularReferenceHandler->canHandle($circularReferenceHandler)) {
                     return $circularReferenceHandler;
                 }
             }
 
-            ThrowExceptionFactory::circularReferenceNotHandled(
+            throw ExceptionFactory::circularReferenceNotHandled(
                 $valueToStandardize,
                 $options->getMaxCircularReference()
             );
@@ -234,7 +241,7 @@ class GlobalStandardizer implements StandardizerInterface, GlobalStandardizerInt
             }
         }
 
-        ThrowExceptionFactory::standardizerNotFound($valueToStandardize);
+        throw ExceptionFactory::standardizerNotFound($valueToStandardize);
     }
 
     private function dealWithResetRegistry()

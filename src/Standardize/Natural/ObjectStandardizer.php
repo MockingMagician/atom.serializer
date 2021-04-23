@@ -8,6 +8,7 @@
 
 namespace MockingMagician\Atom\Serializer\Standardize\Natural;
 
+use Exception;
 use MockingMagician\Atom\Serializer\Standardize\CertifiedStandardizerInterface;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerDependant;
 use MockingMagician\Atom\Serializer\Standardize\GlobalStandardizerInterface;
@@ -54,7 +55,12 @@ class ObjectStandardizer implements CertifiedStandardizerInterface, GlobalStanda
             return true;
         });
         foreach ($methods as $method) {
-            $toReturn[$method] = $this->globalStandardizer->standardize($valueToStandardize->{$method}());
+            try {
+                $valueFromMethod = $valueToStandardize->{$method}();
+            } catch (Exception $exception) {
+                continue;
+            }
+            $toReturn[$method] = $this->globalStandardizer->standardize($valueFromMethod);
         }
 
         return $toReturn;

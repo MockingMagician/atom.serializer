@@ -10,18 +10,18 @@ namespace MockingMagician\Atom\Serializer\Exceptions;
 
 use Exception;
 
-class ThrowExceptionFactory
+class ExceptionFactory
 {
     /**
      * @param $valueToStandardize
      * @param int       $code
      * @param Exception $previous
      *
-     * @throws StandardizerNotFound
+     * @return StandardizerNotFound
      */
     public static function standardizerNotFound($valueToStandardize, $code = 0, $previous = null)
     {
-        throw new StandardizerNotFound($valueToStandardize, $code = 0, $previous = null);
+        return new StandardizerNotFound($valueToStandardize, $code = 0, $previous = null);
     }
 
     /**
@@ -30,11 +30,11 @@ class ThrowExceptionFactory
      * @param int       $code
      * @param Exception $previous
      *
-     * @throws CircularReferenceNotHandled
+     * @return CircularReferenceNotHandled
      */
     public static function circularReferenceNotHandled($valueToStandardize, $maxCircularReference, $code = 0, $previous = null)
     {
-        throw new CircularReferenceNotHandled($valueToStandardize, $maxCircularReference, $code, $previous);
+        return new CircularReferenceNotHandled($valueToStandardize, $maxCircularReference, $code, $previous);
     }
 
     /**
@@ -42,10 +42,10 @@ class ThrowExceptionFactory
      * @param int       $code
      * @param Exception $previous
      *
-     * @throws MaxDepthReached
+     * @return MaxDepthReached
      */
     public static function maxDepthReached($maxDepthReached, $code = 0, $previous = null)
     {
-        throw new MaxDepthReached($maxDepthReached, $code, $previous);
+        return new MaxDepthReached($maxDepthReached, $code, $previous);
     }
 }
